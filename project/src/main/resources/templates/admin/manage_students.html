@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Manage Students</title>
+
+<style>
+
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background:#f4f6f9;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    width:90%;
+    margin:auto;
+}
+
+h2{
+    text-align:center;
+    color:#2c3e50;
+}
+
+h3{
+    color:#2c3e50;
+}
+
+.dashboard-link{
+    display:inline-block;
+    margin-bottom:20px;
+    padding:10px 15px;
+    background:#3498db;
+    color:white;
+    text-decoration:none;
+    border-radius:5px;
+}
+
+.dashboard-link:hover{
+    background:#2980b9;
+}
+
+/* TABLE STYLE */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
+}
+
+th,td{
+    padding:12px;
+    text-align:center;
+}
+
+th{
+    background:#34495e;
+    color:white;
+}
+
+tr:nth-child(even){
+    background:#f2f2f2;
+}
+
+tr:hover{
+    background:#ecf0f1;
+}
+
+/* BUTTONS */
+
+.action-btn{
+    padding:6px 12px;
+    text-decoration:none;
+    border-radius:4px;
+    color:white;
+    font-size:14px;
+}
+
+.edit{
+    background:#27ae60;
+}
+
+.edit:hover{
+    background:#1e8449;
+}
+
+.delete{
+    background:#e74c3c;
+}
+
+.delete:hover{
+    background:#c0392b;
+}
+
+/* FORM STYLE */
+
+.form-container{
+    margin-top:40px;
+    background:white;
+    padding:25px;
+    border-radius:8px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+
+button{
+    background:#2ecc71;
+    color:white;
+    border:none;
+    padding:12px;
+    width:100%;
+    border-radius:5px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#27ae60;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Manage Students</h2>
+
+<a href="/admin/dashboard" class="dashboard-link">⬅ Back to Dashboard</a>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Phone</th>
+<th>Class</th>
+<th>Section</th>
+<th>Roll No</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody>
+<tr th:each="student : ${students}">
+<td th:text="${student.user.name}"></td>
+<td th:text="${student.user.email}"></td>
+<td th:text="${student.phone}"></td>
+<td th:text="${student.classNumber}"></td>
+<td th:text="${student.section}"></td>
+<td th:text="${student.rollNumber}"></td>
+
+<td>
+<a th:href="@{'/admin/students/edit/' + ${student.id}}" class="action-btn edit">Edit</a>
+
+<a th:href="@{'/admin/students/delete/' + ${student.id}}"
+class="action-btn delete"
+onclick="return confirm('Are you sure you want to delete this student?')">Delete</a>
+
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<div class="form-container">
+
+<h3>Add Student</h3>
+
+<form th:action="@{/admin/students/add}" method="post">
+
+<input type="text" name="name" placeholder="Student Name" required>
+
+<input type="email" name="email" placeholder="Email" required>
+
+<input type="text" name="phone" placeholder="Phone Number" required>
+
+<input type="number" name="classNumber" placeholder="Class Number" required>
+
+<input type="text" name="section" placeholder="Section" required>
+
+<input type="text" name="rollNumber" placeholder="Roll Number" required>
+
+<input type="number" name="totalFees" placeholder="Total Fees">
+
+<input type="text" name="academicYear" placeholder="Academic Year (2024-25)">
+
+<button type="submit">Add Student</button>
+
+</form>
+
+</div>
+
+</div>
+
+</body>
+</html>

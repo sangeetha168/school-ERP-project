@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Manage Timetable - Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+.sidebar{
+min-height:100vh;
+border-right:1px solid #dee2e6;
+}
+</style>
+
+</head>
+<body class="bg-light">
+
+<header class="navbar navbar-dark bg-primary shadow sticky-top">
+<div class="container-fluid">
+
+<a class="navbar-brand fw-bold" th:href="@{/admin/dashboard}">
+<i class="bi bi-shield-lock-fill me-2"></i>Admin Panel
+</a>
+
+<form th:action="@{/logout}" method="post">
+<button type="submit" class="btn btn-outline-light btn-sm">
+<i class="bi bi-box-arrow-right me-1"></i>Logout
+</button>
+</form>
+
+</div>
+</header>
+
+<div class="container-fluid">
+<div class="row">
+
+<nav class="col-md-2 d-none d-md-block bg-white sidebar py-4 px-3">
+
+<ul class="nav flex-column gap-1">
+
+<li>
+<a class="nav-link text-dark" th:href="@{/admin/dashboard}">
+<i class="bi bi-speedometer2 me-2"></i>Dashboard
+</a>
+</li>
+
+<li>
+<a class="nav-link text-dark" th:href="@{/admin/students}">
+<i class="bi bi-people-fill me-2"></i>Students
+</a>
+</li>
+
+<li>
+<a class="nav-link text-dark" th:href="@{/admin/faculty}">
+<i class="bi bi-person-badge-fill me-2"></i>Faculty
+</a>
+</li>
+
+<li>
+<a class="nav-link text-dark" th:href="@{/admin/courses}">
+<i class="bi bi-book-fill me-2"></i>Courses
+</a>
+</li>
+
+<li>
+<a class="nav-link active text-primary fw-bold" th:href="@{/admin/timetable}">
+<i class="bi bi-calendar3 me-2"></i>Timetable
+</a>
+</li>
+
+<li>
+<a class="nav-link text-dark" th:href="@{/admin/fees}">
+<i class="bi bi-cash-stack me-2"></i>Fees
+</a>
+</li>
+
+</ul>
+
+</nav>
+
+
+<main class="col-md-10 px-4 py-4">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+<h4 class="fw-bold text-secondary mb-0">Manage Timetable</h4>
+
+<button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#addSlotForm">
+<i class="bi bi-plus-circle me-1"></i>Add Slot
+</button>
+
+</div>
+
+
+<div th:if="${success}" class="alert alert-success">
+<span th:text="${success}"></span>
+</div>
+
+<div th:if="${error}" class="alert alert-danger">
+<span th:text="${error}"></span>
+</div>
+
+
+<!-- ADD SLOT FORM -->
+
+<div class="collapse mb-4" id="addSlotForm">
+
+<div class="card card-body shadow-sm">
+
+<h6 class="fw-bold mb-3">New Timetable Slot</h6>
+
+<form th:action="@{/admin/timetable/add}" method="post">
+
+<div class="row g-3">
+
+<div class="col-md-3">
+<label class="form-label">Faculty</label>
+
+<select class="form-select" name="facultyId" required>
+
+<option value="" disabled selected>Select Faculty</option>
+
+<option th:each="f : ${facultyList}"
+th:value="${f.id}"
+th:text="${f.user.name}">
+</option>
+
+</select>
+</div>
+
+
+<div class="col-md-3">
+
+<label class="form-label">Course</label>
+
+<select class="form-select" name="courseId" required>
+
+<option value="" disabled selected>Select Course</option>
+
+<option th:each="c : ${courses}"
+th:value="${c.id}"
+th:text="${c.courseName + ' (Class ' + c.classNumber + ')'}">
+</option>
+
+</select>
+
+</div>
+
+
+<div class="col-md-2">
+
+<label class="form-label">Class</label>
+
+<select class="form-select" name="classNumber">
+
+<option th:each="i : ${#numbers.sequence(1,10)}"
+th:value="${i}"
+th:text="${i}">
+</option>
+
+</select>
+
+</div>
+
+
+<div class="col-md-2">
+
+<label class="form-label">Day</label>
+
+<select class="form-select" name="dayOfWeek">
+
+<option>Monday</option>
+<option>Tuesday</option>
+<option>Wednesday</option>
+<option>Thursday</option>
+<option>Friday</option>
+<option>Saturday</option>
+
+</select>
+
+</div>
+
+
+<div class="col-md-2">
+
+<label class="form-label">Time Slot</label>
+
+<input type="text"
+class="form-control"
+name="timeSlot"
+placeholder="9:00-10:00"
+required>
+
+</div>
+
+
+<div class="col-md-1">
+
+<label class="form-label">Period</label>
+
+<input type="number"
+class="form-control"
+name="periodNumber"
+min="1"
+max="10"
+required>
+
+</div>
+
+
+<div class="col-md-2 d-flex align-items-end">
+
+<button type="submit" class="btn btn-primary w-100">
+Add
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+
+<!-- TIMETABLE TABLE -->
+
+<div class="card shadow-sm">
+
+<div class="card-header bg-white fw-bold">
+<i class="bi bi-calendar-week me-2 text-primary"></i>Timetable Slots
+</div>
+
+<div class="card-body p-0">
+
+<table class="table table-hover mb-0">
+
+<thead class="table-light">
+
+<tr>
+
+<th>Class</th>
+<th>Day</th>
+<th>Period</th>
+<th>Time</th>
+<th>Course</th>
+<th>Faculty</th>
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr th:each="slot : ${timetableList}">
+
+<td th:text="${slot.classNumber}"></td>
+
+<td th:text="${slot.dayOfWeek}"></td>
+
+<td>
+<span class="badge bg-primary"
+th:text="'P' + ${slot.periodNumber}">
+</span>
+</td>
+
+<td th:text="${slot.timeSlot}"></td>
+
+<td th:text="${slot.course.courseName}"></td>
+
+<td th:text="${slot.faculty.user.name}"></td>
+
+<td>
+
+<a th:href="@{/admin/timetable/delete/{id}(id=${slot.id})}"
+class="btn btn-sm btn-danger"
+onclick="return confirm('Delete this slot?')">
+
+<i class="bi bi-trash"></i>
+
+</a>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<div th:if="${#lists.isEmpty(timetableList)}"
+class="text-center py-5 text-muted">
+
+<i class="bi bi-calendar-x fs-1 d-block mb-3"></i>
+
+<h6>No timetable slots added yet.</h6>
+
+</div>
+
+
+</main>
+
+</div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

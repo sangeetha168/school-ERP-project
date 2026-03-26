@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Faculty Dashboard - School ERP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    .sidebar { min-height: 100vh; border-right: 1px solid #dee2e6; }
+    .nav-link:hover { background-color: #e9ecef; border-radius: 6px; }
+  </style>
+</head>
+<body class="bg-light">
+
+<header class="navbar navbar-dark bg-success shadow sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" th:href="@{/faculty/dashboard}">
+      <i class="bi bi-person-badge-fill me-2"></i>Faculty Panel
+    </a>
+    <div class="d-flex align-items-center gap-3">
+      <span class="text-white small">
+        <i class="bi bi-person-circle me-1"></i>
+        <span th:text="${faculty.user.name}">Faculty Name</span>
+      </span>
+      <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-box-arrow-right me-1"></i>Logout
+        </button>
+      </form>
+    </div>
+  </div>
+</header>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- Sidebar -->
+    <nav class="col-md-2 d-none d-md-block bg-white sidebar py-4 px-3">
+      <ul class="nav flex-column gap-1">
+        <li><a class="nav-link active text-success fw-bold" th:href="@{/faculty/dashboard}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+        <li><a class="nav-link text-dark" th:href="@{/faculty/students}"><i class="bi bi-people-fill me-2"></i>Students</a></li>
+        <li><a class="nav-link text-dark" th:href="@{/faculty/attendance}"><i class="bi bi-calendar-check me-2"></i>Attendance</a></li>
+        <li><a class="nav-link text-dark" th:href="@{/faculty/scores}"><i class="bi bi-clipboard-data me-2"></i>Exam Scores</a></li>
+        <li><a class="nav-link text-dark" th:href="@{/faculty/fees}"><i class="bi bi-cash-stack me-2"></i>Fee Status</a></li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="col-md-10 px-4 py-4">
+      <h4 class="fw-bold text-secondary mb-1">Welcome, <span th:text="${faculty.user.name}">Faculty</span>!</h4>
+      <p class="text-muted mb-4">Specialization: <strong th:text="${faculty.specialization}"></strong></p>
+
+      <!-- My Courses -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white fw-bold">
+          <i class="bi bi-book-fill me-2 text-success"></i>My Courses
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Course Name</th>
+                <th>Class</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="course : ${myCourses}">
+                <td th:text="${course.courseName}"></td>
+                <td th:text="${course.classNumber}"></td>
+                <td>
+                  <a th:href="@{/faculty/attendance(classNumber=${course.classNumber})}"
+                     class="btn btn-sm btn-outline-primary me-1">Attendance</a>
+                  <a th:href="@{/faculty/scores(courseId=${course.id})}"
+                     class="btn btn-sm btn-outline-success">Scores</a>
+                </td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(myCourses)}">
+                <td colspan="3" class="text-center text-muted py-3">No courses assigned yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- My Timetable -->
+      <div class="card shadow-sm">
+        <div class="card-header bg-white fw-bold">
+          <i class="bi bi-calendar3 me-2 text-success"></i>My Weekly Timetable
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Day</th>
+                <th>Period</th>
+                <th>Time</th>
+                <th>Course</th>
+                <th>Class</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="slot : ${myTimetable}">
+                <td th:text="${slot.dayOfWeek}"></td>
+                <td th:text="${slot.periodNumber}"></td>
+                <td th:text="${slot.timeSlot}"></td>
+                <td th:text="${slot.course.courseName}"></td>
+                <td th:text="${slot.classNumber}"></td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(myTimetable)}">
+                <td colspan="5" class="text-center text-muted py-3">No timetable assigned yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
